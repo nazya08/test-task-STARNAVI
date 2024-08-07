@@ -1,0 +1,1 @@
+# Тестове завдання на позицію Python Developer (STARNAVI) 
