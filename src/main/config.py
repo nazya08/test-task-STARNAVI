@@ -1,4 +1,5 @@
 import os
+import secrets
 from typing import Optional, Any, Dict, List, Union
 
 from dotenv import load_dotenv
@@ -12,8 +13,24 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Test task for StarNavi"
     API_STR: str = "/api"
 
+    JWT_SECRET_KEY: str = os.getenv(
+        "JWT_SECRET_KEY", secrets.token_urlsafe(32)
+    )
+    JWT_REFRESH_SECRET_KEY: str = os.getenv(
+        "JWT_REFRESH_SECRET_KEY", secrets.token_urlsafe(32)
+    )
+    ACTIVATION_SECRET_KEY: str = os.getenv(
+        "ACTIVATION_SECRET_KEY", secrets.token_urlsafe(32)
+    )
+
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 30 * 7  # TODO: should be "60 * 30"
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
+    ACTIVATION_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 3
+
+    TOKEN_ALGORITHM: str = "HS256"
+
     SERVER_NAME: str = "tz_starnavi"
-    SERVER_HOST: str = "0.0.0.0"
+    SERVER_HOST: str = "127.0.0.1"
     SERVER_PORT: int = 8000
     LOG_LEVEL: str = "debug"
     RELOAD: bool = True
@@ -36,7 +53,7 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = os.getenv("POSTGRES_USER")
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB")
-    SQLALCHEMY_DATABASE_URL: Optional[PostgresDsn] = None
+    SQLALCHEMY_DATABASE_URL: Optional[str] = None
 
     @field_validator("SQLALCHEMY_DATABASE_URL", mode="before")
     def assemble_db_connection(
