@@ -71,6 +71,8 @@ def sign_up(
         email=user.email,
         is_active=user.is_active,
         type=user.type,
+        created_at=user.created_at,
+        updated_at=user.updated_at
     )
     print(tokens)
     print(user_detail)

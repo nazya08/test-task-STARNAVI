@@ -1,12 +1,11 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from src.adapters.schemas.pagination import Pagination, PaginationResponse
 from src.adapters.schemas.user import UserResponse, UserCreate, UserId, UsersListResponse, UserExtendedData, UserUpdate
 from src.adapters.sqlalchemy.models import User
 from src.presentation.dependencies.user import get_current_active_superuser, get_current_active_user, get_user_service
-from src.services.common.exceptions import UserNotFoundError, UserExistsError
 from src.services.user import UserService
 
 router = APIRouter()
@@ -20,7 +19,7 @@ def read_users(
         current_superuser: User = Depends(get_current_active_superuser),
 ) -> UsersListResponse:
     """
-    Retrieve paginated users response
+    Retrieve paginated users response.
     """
     users = user_service.get_users_list(Pagination(skip=skip, limit=limit))
     total = user_service.user_db_gateway.get_users_total()
@@ -96,19 +95,15 @@ def update_user(
     """
     Update a user.
     """
-    try:
-        user_update_data = UserUpdate(user_id=user_id, user_data=user_in)
-        updated_user = user_service.update_user(data=user_update_data)
+    user_update_data = UserUpdate(user_id=user_id, user_data=user_in)
+    updated_user = user_service.update_user(data=user_update_data)
 
-        return UserResponse(
-            id=updated_user.id,
-            username=updated_user.username,
-            email=updated_user.email,
-            is_active=updated_user.is_active,
-            type=updated_user.type,
-            created_at=updated_user.created_at
-        )
-    except UserNotFoundError:  # TODO
-        raise HTTPException(status_code=404, detail="User not found.")
-    except UserExistsError:  # TODO
-        raise HTTPException(status_code=400, detail="User with this email already exists.")
+    return UserResponse(
+        id=updated_user.id,
+        username=updated_user.username,
+        email=updated_user.email,
+        is_active=updated_user.is_active,
+        type=updated_user.type,
+        created_at=updated_user.created_at,
+        updated_at=updated_user.updated_at
+    )

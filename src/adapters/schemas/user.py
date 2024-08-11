@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr
@@ -23,6 +24,8 @@ class UserId(BaseModel):
 
 class UserResponse(UserExtendedData):
     id: Optional[int] = None
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         from_attributes = True

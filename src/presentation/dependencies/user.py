@@ -25,6 +25,14 @@ def get_user_service(user_db_gateway: UserDbGateway = Depends(get_user_db_gatewa
     return UserService(user_db_gateway=user_db_gateway)
 
 
+def get_user(user_id: int, user_db_gateway: UserDbGateway = Depends(get_user_db_gateway)):
+    user = user_db_gateway.get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user
+
+
 def get_current_user(
         token: str = Depends(jwt_bearer),
         user_db_gateway: UserDbGateway = Depends(get_user_db_gateway)
