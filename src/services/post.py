@@ -53,8 +53,11 @@ class PostService:
 
         self.post_db_gateway.delete_post(post_id)
 
+    def get_count_of_comments(self, post_id: int) -> int:
+        return self.post_db_gateway.get_count_comments_by_post_id(post_id)
 
-class PostFilter(Filter):
+
+class PostFilter(Filter):  # TODO: replace to another file
     title: Optional[str] = None
     description: Optional[str] = None
     is_blocked: Optional[bool] = None

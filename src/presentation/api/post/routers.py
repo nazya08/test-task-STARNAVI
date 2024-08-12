@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_204_NO_CONTENT
 
-from src.adapters.schemas.post import PostResponse, PostCreate, PostUpdate
+from src.adapters.schemas.post import PostResponse, PostCreate, PostUpdate, PostExternalResponse
 from src.adapters.sqlalchemy.models import Post, User
 from src.adapters.sqlalchemy.models.user import UserType
 from src.presentation.dependencies.base import get_db
@@ -14,9 +14,9 @@ from src.services.post import PostFilter, PostService
 
 router = APIRouter()
 
-allow_delete_resource = PermissionChecker(
-    [UserType.admin, UserType.default_user]
-)
+# allow_delete_resource = PermissionChecker(
+#     [UserType.admin, UserType.default_user]
+# )
 
 
 @router.get("/")
@@ -32,12 +32,28 @@ def read_all_posts(
     return filters.filter_posts(db, skip, limit)
 
 
-@router.get("/{post_id}", response_model=PostResponse)
-def read_post_by_id(post: Post = Depends(get_post)):
+@router.get("/{post_id}", response_model=PostExternalResponse)
+def read_post_by_id(
+        post: Post = Depends(get_post),
+        post_service: PostService = Depends(get_post_service)
+):
     """
     Read a post by id.
     """
-    return post
+    count_of_comments = post_service.get_count_of_comments(post_id=post.id)
+    post_detail = PostResponse(
+        id=post.id,
+        title=post.title,
+        description=post.description,
+        created_by_id=post.created_by_id,
+        is_blocked=post.is_blocked,
+        created_at=post.created_at,
+        updated_at=post.updated_at
+    )
+    return PostExternalResponse(
+        post_detail=post_detail,
+        comments=count_of_comments
+    )
 
 
 @router.get("/user/{user_id}", response_model=List[PostResponse])
@@ -94,7 +110,7 @@ def update_post(
     )
 
 
-@router.delete("/{post_id}", dependencies=[Depends(allow_delete_resource)], status_code=HTTP_204_NO_CONTENT)
+@router.delete("/{post_id}", status_code=HTTP_204_NO_CONTENT)
 def remove_post(
     post_id: int,
     post_service: PostService = Depends(get_post_service),

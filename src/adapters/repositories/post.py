@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from src.adapters.repositories.common.post import PostReader, PostSaver, PostsReader
 from src.adapters.sqlalchemy.db.session import SessionLocal
+from src.adapters.sqlalchemy.models import Comment
 from src.adapters.sqlalchemy.models.post import Post
 
 
@@ -22,6 +23,9 @@ class PostDbGateway(PostReader, PostsReader, PostSaver):
 
     def get_posts_list(self, skip: int, limit: int) -> List[Post]:
         return self.session.query(Post).offset(skip).limit(limit).all()
+
+    def get_count_comments_by_post_id(self, post_id: int) -> int:
+        return self.session.query(Comment).filter(Comment.post_id == post_id).count()
 
     def update_post(self, post_id: int, post_data: dict) -> Optional[Post]:
         post = self.get_post_by_id(post_id)

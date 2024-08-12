@@ -23,7 +23,7 @@ class Settings(BaseSettings):
         "ACTIVATION_SECRET_KEY", secrets.token_urlsafe(32)
     )
 
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 30 * 7  # TODO: should be "60 * 30"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 30
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
     ACTIVATION_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 3
 

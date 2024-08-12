@@ -18,11 +18,7 @@ class CommentsReader(Protocol):
 
 class CommentSaver(Protocol):
     @abstractmethod
-    def save_comment(self, post_id: int, comment_data: dict) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def update_comment(self, post_id: int, comment_id: int, comment_data: dict) -> Comment:
+    def save_comment(self, comment: Comment) -> None:
         raise NotImplementedError
 
     @abstractmethod

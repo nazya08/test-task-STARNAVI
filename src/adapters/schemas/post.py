@@ -20,6 +20,11 @@ class PostResponse(BasePost):
         from_attributes = True
 
 
+class PostExternalResponse(BaseModel):
+    post_detail: PostResponse
+    comments: int
+
+
 class PostCreate(BasePost):
     pass
 
