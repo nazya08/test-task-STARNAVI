@@ -35,7 +35,8 @@ def read_users(
                 email=user.email,
                 is_active=user.is_active,
                 type=user.type,
-                created_at=user.created_at
+                created_at=user.created_at,
+                updated_at=user.updated_at
             )
             for user in users
         ]
@@ -59,7 +60,8 @@ def read_user_by_id(
         email=user.email,
         is_active=user.is_active,
         type=user.type,
-        created_at=user.created_at
+        created_at=user.created_at,
+        updated_at=user.updated_at
     )
 
 
@@ -81,7 +83,8 @@ def create_user(
         email=user.email,
         is_active=user.is_active,
         type=user.type,
-        created_at=user.created_at
+        created_at=user.created_at,
+        updated_at=user.updated_at
     )
 
 

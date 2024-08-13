@@ -22,6 +22,9 @@ class UserService:
         if self.user_db_gateway.get_user_by_username(user_data['username']):
             raise UserExistsError(status_code=400, detail="User with this username already exists.")
 
+        if self.user_db_gateway.get_user_by_email(user_data['email']):
+            raise UserExistsError(status_code=400, detail="User with this email already exists.")
+
         password = user_data.pop("password")
         response, msg = self.validate_password(password)
         if not response:
@@ -67,8 +70,8 @@ class UserService:
         return user
 
     def sign_up(self, obj_in: UserSignUp) -> Optional[User]:
-        if self.user_db_gateway.get_user_by_email(obj_in.email):
-            raise UserExistsError(status_code=400, detail="User with this email already exists.")
+        # if self.user_db_gateway.get_user_by_email(obj_in.email):
+        #     raise UserExistsError(status_code=400, detail="User with this email already exists.")
 
         user = self.create_user(obj_in)
         self.user_db_gateway.save_user(user)
