@@ -29,6 +29,18 @@ def read_comment_by_id(
     return comment
 
 
+# @router.post("{post_id}/comments/")
+# def create_comment(
+#         *,
+#         post: Post = Depends(get_post),
+#         comment_in: CommentCreate,
+#         comment_service: CommentService = Depends(get_comment_service),
+#         current_user: User = Depends(get_current_active_user),
+# ):
+#     comment = comment_service.create_comment(post_id=post.id, obj_in=comment_in, current_user=current_user)
+#     return comment
+
+
 @router.post("{post_id}/comments/")
 def create_comment(
         *,
@@ -37,7 +49,7 @@ def create_comment(
         comment_service: CommentService = Depends(get_comment_service),
         current_user: User = Depends(get_current_active_user),
 ):
-    comment = comment_service.create_comment(post_id=post.id, obj_in=comment_in, current_user=current_user)
+    comment = comment_service.create_comment_with_check(post_id=post.id, obj_in=comment_in, current_user=current_user)
     return comment
 
 

@@ -70,6 +70,7 @@ class Settings(BaseSettings):
         )
 
     SECRET_KEY: str = os.getenv("SECRET_KEY")
+    OPEN_AI_KEY: str = os.getenv("OPEN_AI_KEY")
 
     class Config:
         case_sensitive = True

@@ -10,6 +10,7 @@ from src.adapters.schemas.post import PostCreate, PostUpdate
 from src.adapters.sqlalchemy.models import Post, User
 from src.adapters.repositories.post import PostDbGateway
 from src.adapters.sqlalchemy.models.user import UserType
+from src.services.open_ai import open_ai_service
 
 
 class PostService:
@@ -17,13 +18,28 @@ class PostService:
     def __init__(self, post_db_gateway: PostDbGateway) -> None:
         self.post_db_gateway = post_db_gateway
 
+    # def create_post(self, obj_in: PostCreate, current_user: User) -> Post:
+    #     if not current_user:
+    #         raise HTTPException(status_code=400, detail="Invalid current user")
+    #
+    #     post_data = obj_in.dict()
+    #     post_data["created_by_id"] = current_user.id
+    #     post_data["created_at"] = datetime.utcnow()
+    #
+    #     post_db_obj = Post(**post_data)
+    #     self.post_db_gateway.save_post(post_db_obj)
+    #
+    #     return post_db_obj
+
     def create_post(self, obj_in: PostCreate, current_user: User) -> Post:
         if not current_user:
             raise HTTPException(status_code=400, detail="Invalid current user")
 
         post_data = obj_in.dict()
         post_data["created_by_id"] = current_user.id
-        post_data["created_at"] = datetime.utcnow()
+
+        if open_ai_service.check_text_moderation(obj_in.title) or open_ai_service.check_text_moderation(obj_in.description):
+            post_data["is_blocked"] = True
 
         post_db_obj = Post(**post_data)
         self.post_db_gateway.save_post(post_db_obj)
@@ -34,6 +50,11 @@ class PostService:
         if post.created_by_id != current_user.id:
             raise HTTPException(
                 status_code=403, detail="You do not have permission to perform this action"
+            )
+
+        if open_ai_service.check_text_moderation(post_data.title) or open_ai_service.check_text_moderation(post_data.description):
+            raise HTTPException(
+                status_code=400, detail="Post contains offensive language or insults, etc."
             )
 
         updated_post = self.post_db_gateway.update_post(post.id, post_data.dict())

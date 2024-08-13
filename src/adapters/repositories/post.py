@@ -1,5 +1,8 @@
 from typing import List, Optional
 
+from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
+
 from src.adapters.repositories.common.post import PostReader, PostSaver, PostsReader
 from src.adapters.sqlalchemy.db.session import SessionLocal
 from src.adapters.sqlalchemy.models import Comment
@@ -16,7 +19,8 @@ class PostDbGateway(PostReader, PostsReader, PostSaver):
         self.session.refresh(post)
 
     def get_post_by_id(self, id: int) -> Optional[Post]:
-        return self.session.query(Post).filter(Post.id == id).first()
+        return self.session.query(Post).filter(Post.id == id).filter(Post.is_blocked == False).first()
+        # return self.session.query(Post).filter(Post.id == id).first()
 
     def get_user_posts(self, user_id: int) -> List[Post]:
         return self.session.query(Post).filter_by(created_by_id=user_id).all()
@@ -25,7 +29,7 @@ class PostDbGateway(PostReader, PostsReader, PostSaver):
         return self.session.query(Post).offset(skip).limit(limit).all()
 
     def get_count_comments_by_post_id(self, post_id: int) -> int:
-        return self.session.query(Comment).filter(Comment.post_id == post_id).count()
+        return self.session.query(Comment).filter(Comment.post_id == post_id).filter(Comment.is_blocked == False).count()
 
     def update_post(self, post_id: int, post_data: dict) -> Optional[Post]:
         post = self.get_post_by_id(post_id)
@@ -42,5 +46,11 @@ class PostDbGateway(PostReader, PostsReader, PostSaver):
     def delete_post(self, post_id: int) -> None:
         post = self.get_post_by_id(post_id)
         if post:
-            self.session.delete(post)
-            self.session.commit()
+            try:
+                self.session.delete(post)
+                self.session.commit()
+            except IntegrityError:
+                self.session.rollback()
+                raise HTTPException(
+                    status_code=400, detail="Error occurred while deleting the post."
+                )

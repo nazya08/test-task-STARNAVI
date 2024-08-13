@@ -13,4 +13,4 @@ class Post(Base, TimestampedModel):
     is_blocked = Column(Boolean, default=False)
 
     created_by = relationship("User", back_populates="posts")
-    comments = relationship("Comment", back_populates="post")
+    comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
