@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -15,9 +17,12 @@ def get_post_service(post_db_gateway: PostDbGateway = Depends(get_post_db_gatewa
 
 
 def get_post(
-        post_id: int,
+        post_id: Optional[int] = None,
         post_db_gateway: PostDbGateway = Depends(get_post_db_gateway)
 ):
+    if post_id is None:
+        return None
+
     post = post_db_gateway.get_post_by_id(post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")

@@ -1,6 +1,8 @@
-from typing import List
+from datetime import datetime
+from typing import List, Optional
 
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 from src.adapters.repositories.comment import CommentDbGateway
 from src.adapters.schemas.comment import CommentCreate, CommentUpdate
@@ -60,3 +62,19 @@ class CommentService:
 
     def remove_comment(self, post_id: int, comment_id: int):
         self.comment_db_gateway.delete_comment(post_id=post_id, comment_id=comment_id)
+
+    def get_comments_daily_breakdown(self, start_date: str, end_date: str, post_id: Optional[int] = None) -> List[dict]:
+        try:
+            datetime.strptime(start_date, '%Y-%m-%d')
+            datetime.strptime(end_date, '%Y-%m-%d')
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Expected format is YYYY-MM-DD.")
+
+        results = self.comment_db_gateway.get_comments_daily_breakdown(start_date, end_date, post_id)
+
+        return [
+            {"date": result.date,
+             "total_comments": result.total_comments,
+             "blocked_comments": result.blocked_comments
+             } for result in results
+        ]

@@ -1,8 +1,12 @@
-from fastapi import APIRouter, Depends
+from typing import Optional
+
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
 from starlette.status import HTTP_204_NO_CONTENT
 
 from src.adapters.schemas.comment import CommentCreate, CommentUpdate
 from src.adapters.sqlalchemy.models import Post, Comment, User
+from src.presentation.dependencies.base import get_db
 from src.presentation.dependencies.comment import get_comment_service, get_comment, check_comment_access
 from src.presentation.dependencies.post import get_post
 from src.presentation.dependencies.user import get_current_active_user
@@ -77,3 +81,16 @@ def remove_comment(
         current_user: User = Depends(get_current_active_user)
 ):
     return comment_service.remove_comment(post_id=post.id, comment_id=comment.id)
+
+
+@router.get("/comments/daily_breakdown/")
+def comments_daily_breakdown(
+        *,
+        start_date: str = Query(..., description="Start date in YYYY-MM-DD format"),
+        end_date: str = Query(..., description="End date in YYYY-MM-DD format"),
+        post_id: Optional[int] = Query(None, description="Filter by post ID"),
+        post: Post = Depends(get_post),
+        comment_service: CommentService = Depends(get_comment_service),
+        current_user: User = Depends(get_current_active_user)
+):
+    return comment_service.get_comments_daily_breakdown(start_date, end_date, post_id)
