@@ -7,7 +7,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from src.adapters.sqlalchemy.models import base, post, comment, user  # noqa
+from src.adapters.sqlalchemy.models import base, post, comment, user, autoreply_settings  # noqa
 from src.adapters.sqlalchemy.db.base_class import Base
 
 # this is the Alembic Config object, which provides

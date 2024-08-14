@@ -22,3 +22,4 @@ class User(Base, TimestampedModel):
 
     posts = relationship("Post", back_populates="created_by")
     comments = relationship("Comment", back_populates="owner")
+    auto_reply_settings = relationship("AutoReplySettings", uselist=False, back_populates="user")

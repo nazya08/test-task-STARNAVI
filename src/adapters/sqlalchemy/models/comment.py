@@ -11,6 +11,8 @@ class Comment(Base, TimestampedModel):
     post_id = Column(Integer, ForeignKey("post.id"), nullable=False)
     owner_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     is_blocked = Column(Boolean, default=False)
+    reply_to_comment_id = Column(Integer, ForeignKey('comment.id'), nullable=True)
 
     post = relationship("Post", back_populates="comments")
     owner = relationship("User", back_populates="comments")
+    reply_to_comment = relationship("Comment", remote_side=id, backref="replies")

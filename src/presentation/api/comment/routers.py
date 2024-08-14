@@ -1,12 +1,10 @@
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
 from starlette.status import HTTP_204_NO_CONTENT
 
 from src.adapters.schemas.comment import CommentCreate, CommentUpdate
 from src.adapters.sqlalchemy.models import Post, Comment, User
-from src.presentation.dependencies.base import get_db
 from src.presentation.dependencies.comment import get_comment_service, get_comment, check_comment_access
 from src.presentation.dependencies.post import get_post
 from src.presentation.dependencies.user import get_current_active_user

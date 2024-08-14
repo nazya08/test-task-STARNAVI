@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     TOKEN_ALGORITHM: str = "HS256"
 
     SERVER_NAME: str = "tz_starnavi"
-    SERVER_HOST: str = "127.0.0.1"
+    SERVER_HOST: str = "0.0.0.0"
     SERVER_PORT: int = 8000
     LOG_LEVEL: str = "debug"
     RELOAD: bool = True
@@ -71,6 +71,7 @@ class Settings(BaseSettings):
 
     SECRET_KEY: str = os.getenv("SECRET_KEY")
     OPEN_AI_KEY: str = os.getenv("OPEN_AI_KEY")
+    BROKER_URL: str = os.getenv("BROKER_URL")
 
     class Config:
         case_sensitive = True
