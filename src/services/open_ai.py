@@ -36,6 +36,21 @@ class OpenAIService:
         return False
 
     def generate_reply(self, post_content: str, comment_content: str) -> str:
+        """
+            Generates a relevant and thoughtful reply to a given comment based on the content of a post.
+
+            This method uses the OpenAI GPT-3.5 model to create a reply to a comment.
+            The generated reply is contextually relevant to both the post and the comment.
+            The reply is constrained by the allowed token limit and is designed to not exceed 300 characters.
+
+            Args:
+                post_content (str): The content of the post to which the comment was made.
+                comment_content (str): The content of the comment for which the reply needs to be generated.
+
+            Returns:
+                str: A generated reply based on the post and comment content. If an error occurs during the process,
+                     a default error message is returned.
+            """
         prompt = f"""
             Post: {post_content}.
             Comment: {comment_content}.

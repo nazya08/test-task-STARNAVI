@@ -33,7 +33,7 @@ class AutoReplyService:
     def get_settings(self, user_id: int) -> AutoReplySettings:
         return self.auto_reply_db_gateway.get_settings_by_user_id(user_id)
 
-    def create_auto_reply(self, post: Post, comment: Comment, user: User):
+    def create_auto_reply(self, post: Post, comment: Comment, user: User) -> None:
         settings = self.get_settings(user.id)
         if not settings or not settings.is_enabled:
             raise HTTPException(status_code=400, detail="Auto-reply is not enabled for the current user.")
@@ -52,4 +52,22 @@ class AutoReplyService:
             "reply_to_comment_id": comment.id
         }
 
+        self.celery_service.schedule_auto_reply(auto_reply, settings.reply_delay)
+
+    def create_delayed_auto_reply(self, post: Post, comment: Comment) -> None:
+        settings = self.get_settings(post.created_by.id)
+
+        # Generate a reply using the OpenAI service
+        reply_content = self.open_ai_service.generate_reply(post_content=post.description,
+                                                            comment_content=comment.content)
+
+        # Create a dictionary for the automatic reply
+        auto_reply = {
+            "content": reply_content,
+            "post_id": post.id,
+            "owner_id": post.created_by.id,
+            "reply_to_comment_id": comment.id
+        }
+
+        # Schedule the task based on the user's settings
         self.celery_service.schedule_auto_reply(auto_reply, settings.reply_delay)

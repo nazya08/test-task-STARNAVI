@@ -1,13 +1,15 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from starlette.status import HTTP_204_NO_CONTENT
 
 from src.adapters.schemas.comment import CommentCreate, CommentUpdate
 from src.adapters.sqlalchemy.models import Post, Comment, User
+from src.presentation.dependencies.auto_reply import get_auto_reply_service
 from src.presentation.dependencies.comment import get_comment_service, get_comment, check_comment_access
 from src.presentation.dependencies.post import get_post
 from src.presentation.dependencies.user import get_current_active_user
+from src.services.auto_reply import AutoReplyService
 from src.services.comment import CommentService
 
 router = APIRouter()
@@ -31,18 +33,6 @@ def read_comment_by_id(
     return comment
 
 
-# @router.post("{post_id}/comments/")
-# def create_comment(
-#         *,
-#         post: Post = Depends(get_post),
-#         comment_in: CommentCreate,
-#         comment_service: CommentService = Depends(get_comment_service),
-#         current_user: User = Depends(get_current_active_user),
-# ):
-#     comment = comment_service.create_comment(post_id=post.id, obj_in=comment_in, current_user=current_user)
-#     return comment
-
-
 @router.post("{post_id}/comments/")
 def create_comment(
         *,
@@ -50,8 +40,13 @@ def create_comment(
         comment_in: CommentCreate,
         comment_service: CommentService = Depends(get_comment_service),
         current_user: User = Depends(get_current_active_user),
+        auto_reply_service: AutoReplyService = Depends(get_auto_reply_service)
 ):
     comment = comment_service.create_comment_with_check(post_id=post.id, obj_in=comment_in, current_user=current_user)
+    # Call the method to create an automatic reply
+    if post.created_by.id != current_user.id and post.created_by.auto_reply_settings.is_enabled:
+        auto_reply_service.create_delayed_auto_reply(post=post, comment=comment)
+
     return comment
 
 
