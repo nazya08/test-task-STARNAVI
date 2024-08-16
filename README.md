@@ -27,6 +27,13 @@ Here's how to get the project up and running using docker and docker compose.
 
 Your application should now be running at `http://localhost:8000`
 
+### Create a superuser
+
+To create a superuser you need to connect to the docker container and run the script:
+   ```
+   docker exec -it tz-starnavi-web-1 python -m src.scripts.superuser <email> <password> <username>
+   ```
+
 ## Installation and Usage without Docker
 
 Here's how to get the project up and running on your local machine for development and testing.
