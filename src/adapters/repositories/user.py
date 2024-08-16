@@ -1,7 +1,10 @@
 from typing import List, Optional
 
+from sqlalchemy.exc import SQLAlchemyError
+
 from src.adapters.repositories.common.user import UserReader, UsersReader, UserSaver
 from src.adapters.sqlalchemy.db.session import SessionLocal
+from src.adapters.sqlalchemy.models import AutoReplySettings
 from src.adapters.sqlalchemy.models.user import User
 
 
@@ -13,6 +16,17 @@ class UserDbGateway(UserReader, UsersReader, UserSaver):
         self.session.add(user)
         self.session.commit()
         self.session.refresh(user)
+
+    def create_user(self, user: User) -> User:
+        try:
+            self.save_user(user)
+            auto_reply_settings = AutoReplySettings(user_id=user.id)
+            self.session.add(auto_reply_settings)
+            self.session.commit()
+            return user
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise e
 
     def get_user_by_id(self, id: int) -> Optional[User]:
         return self.session.query(User).filter(User.id == id).first()

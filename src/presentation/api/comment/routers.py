@@ -44,8 +44,9 @@ def create_comment(
 ):
     comment = comment_service.create_comment_with_check(post_id=post.id, obj_in=comment_in, current_user=current_user)
     # Call the method to create an automatic reply
-    if post.created_by.id != current_user.id and post.created_by.auto_reply_settings.is_enabled:
-        auto_reply_service.create_delayed_auto_reply(post=post, comment=comment)
+    if not comment.is_blocked:
+        if post.created_by.id != current_user.id and post.created_by.auto_reply_settings.is_enabled:
+            auto_reply_service.create_delayed_auto_reply(post=post, comment=comment)
 
     return comment
 

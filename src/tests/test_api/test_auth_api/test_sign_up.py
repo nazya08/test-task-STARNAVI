@@ -2,7 +2,7 @@ from src.adapters.sqlalchemy.models import User
 from src.tests.conftest import client, test_db, db
 
 
-def test_sign_up(test_db, db):
+def test_sign_up(test_db):
     response = client.post("api/auth/sign-up", json={
         "email": "newuser@example.com",
         "username": "newuser",

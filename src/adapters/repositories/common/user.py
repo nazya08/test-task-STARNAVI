@@ -9,6 +9,10 @@ class UserSaver(Protocol):
     def save_user(self, user: User) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def create_user(self, user: User) -> User:
+        raise NotImplementedError
+
 
 class UserReader(Protocol):
     @abstractmethod

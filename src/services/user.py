@@ -32,12 +32,9 @@ class UserService:
             raise WeakPasswordError(status_code=400, detail=msg)
 
         user_data["hashed_password"] = get_password_hash(password)
-        user_db_obj = User(**user_data)
+        user = User(**user_data)
 
-        self.user_db_gateway.save_user(user_db_obj)
-
-        auto_reply_settings = AutoReplySettings(user_id=user_db_obj.id)
-        auto_reply_db_gateway.save_settings(auto_reply_settings)
+        user_db_obj = self.user_db_gateway.create_user(user)
 
         return user_db_obj
 
@@ -75,11 +72,8 @@ class UserService:
         return user
 
     def sign_up(self, obj_in: UserSignUp) -> Optional[User]:
-        # if self.user_db_gateway.get_user_by_email(obj_in.email):
-        #     raise UserExistsError(status_code=400, detail="User with this email already exists.")
-
         user = self.create_user(obj_in)
-        self.user_db_gateway.save_user(user)
+        # self.user_db_gateway.save_user(user)
 
         return user
 
