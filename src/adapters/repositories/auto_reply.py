@@ -18,3 +18,6 @@ class AutoReplyDbGateway(AutoReplyReader, AutoReplySaver):
 
     def update_settings(self, settings: AutoReplySettings):
         self.session.commit()
+
+
+auto_reply_db_gateway = AutoReplyDbGateway(SessionLocal())

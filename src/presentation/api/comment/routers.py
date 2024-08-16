@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query
 from starlette.status import HTTP_204_NO_CONTENT
 
 from src.adapters.schemas.comment import CommentCreate, CommentUpdate
@@ -33,7 +33,7 @@ def read_comment_by_id(
     return comment
 
 
-@router.post("{post_id}/comments/")
+@router.post("/{post_id}/comments/")
 def create_comment(
         *,
         post: Post = Depends(get_post),

@@ -1,7 +1,6 @@
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends, Query, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException
 
 from src.adapters.sqlalchemy.models import User, Comment, Post
 from src.presentation.dependencies.auto_reply import get_auto_reply_service

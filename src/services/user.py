@@ -2,10 +2,11 @@ import re
 
 from typing import Optional, Union, List
 
+from src.adapters.repositories.auto_reply import auto_reply_db_gateway
 from src.adapters.repositories.user import UserDbGateway
 from src.adapters.schemas.pagination import Pagination
 from src.adapters.schemas.user import UserCreate, UserSignUp, UserId, UserUpdate
-from src.adapters.sqlalchemy.models import User
+from src.adapters.sqlalchemy.models import User, AutoReplySettings
 from src.adapters.sqlalchemy.models.user import UserType
 from src.main.security import verify_password, get_password_hash
 from src.services.common.exceptions import WeakPasswordError, UserNotFoundError, UserExistsError
@@ -34,6 +35,10 @@ class UserService:
         user_db_obj = User(**user_data)
 
         self.user_db_gateway.save_user(user_db_obj)
+
+        auto_reply_settings = AutoReplySettings(user_id=user_db_obj.id)
+        auto_reply_db_gateway.save_settings(auto_reply_settings)
+
         return user_db_obj
 
     def update_user(self, data: UserUpdate):

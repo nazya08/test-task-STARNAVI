@@ -6,10 +6,9 @@ from starlette.status import HTTP_204_NO_CONTENT
 
 from src.adapters.schemas.post import PostResponse, PostCreate, PostUpdate, PostExternalResponse
 from src.adapters.sqlalchemy.models import Post, User
-from src.adapters.sqlalchemy.models.user import UserType
 from src.presentation.dependencies.base import get_db
 from src.presentation.dependencies.post import get_post, get_post_service
-from src.presentation.dependencies.user import PermissionChecker, get_current_user, get_user, get_current_active_user
+from src.presentation.dependencies.user import get_user, get_current_active_user
 from src.services.post import PostFilter, PostService
 
 router = APIRouter()

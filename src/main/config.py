@@ -55,6 +55,14 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = os.getenv("POSTGRES_DB")
     SQLALCHEMY_DATABASE_URL: Optional[str] = None
 
+    POSTGRES_TEST_SERVER: str = (
+        f'{os.getenv("POSTGRES_TEST_HOST")}:{os.getenv("POSTGRES_TEST_PORT")}'
+    )
+    POSTGRES_TEST_USER: str = os.getenv("POSTGRES_TEST_USER")
+    POSTGRES_TEST_PASSWORD: str = os.getenv("POSTGRES_TEST_PASSWORD")
+    POSTGRES_TEST_DB: str = os.getenv("POSTGRES_TEST_DB")
+    SQLALCHEMY_TEST_DATABASE_URL: Optional[str] = None
+
     @field_validator("SQLALCHEMY_DATABASE_URL", mode="before")
     def assemble_db_connection(
             cls, v: Optional[str], values: Dict[str, Any]
@@ -67,6 +75,20 @@ class Settings(BaseSettings):
             password=values.get("POSTGRES_PASSWORD"),
             host=values.get("POSTGRES_SERVER"),
             path=f"/{values.get('POSTGRES_DB') or ''}",
+        )
+
+    @field_validator("SQLALCHEMY_TEST_DATABASE_URL", mode="before")
+    def assemble_test_db_connection(
+            cls, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:
+        if isinstance(v, str):
+            return v
+        return PostgresDsn.build(
+            scheme="postgresql",
+            user=values.get("POSTGRES_TEST_USER"),
+            password=values.get("POSTGRES_TEST_PASSWORD"),
+            host=values.get("POSTGRES_TEST_SERVER"),
+            path=f"/{values.get('POSTGRES_TEST_DB') or ''}",
         )
 
     SECRET_KEY: str = os.getenv("SECRET_KEY")
