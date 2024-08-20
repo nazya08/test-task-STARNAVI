@@ -17,19 +17,6 @@ class CommentService:
     def get_list_by_post_id(self, post_id: int, skip: int = 0, limit: int = 10) -> List[Comment]:
         return self.comment_db_gateway.get_comments_by_post_id(post_id=post_id, skip=skip, limit=limit)
 
-    # def create_comment(self, post_id: int, obj_in: CommentCreate, current_user: User) -> Comment:
-    #     if not current_user:
-    #         raise HTTPException(status_code=400, detail="Invalid current user")
-    #
-    #     comment_data = obj_in.dict()
-    #     comment_data["post_id"] = post_id
-    #     comment_data["owner_id"] = current_user.id
-    #
-    #     comment_db_obj = Comment(**comment_data)
-    #     self.comment_db_gateway.save_comment(comment_db_obj)
-    #
-    #     return comment_db_obj
-
     def create_comment_with_check(self, post_id: int, obj_in: CommentCreate, current_user: User) -> Comment:
         if not current_user:
             raise HTTPException(status_code=400, detail="Invalid current user")

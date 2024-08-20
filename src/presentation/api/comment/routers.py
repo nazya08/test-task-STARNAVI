@@ -22,6 +22,9 @@ def read_all_comments(
         skip: int = 0,
         limit: int = 100,
 ):
+    """
+    Retrieve comments by post_id.
+    """
     comments = comment_service.get_list_by_post_id(post_id=post.id, skip=skip, limit=limit)
     return comments
 
@@ -30,6 +33,9 @@ def read_all_comments(
 def read_comment_by_id(
         post: Post = Depends(get_post), comment: Comment = Depends(get_comment)
 ):
+    """
+    Read a comment by id.
+    """
     return comment
 
 
@@ -42,6 +48,9 @@ def create_comment(
         current_user: User = Depends(get_current_active_user),
         auto_reply_service: AutoReplyService = Depends(get_auto_reply_service)
 ):
+    """
+    Create a comment.
+    """
     comment = comment_service.create_comment_with_check(post_id=post.id, obj_in=comment_in, current_user=current_user)
     # Call the method to create an automatic reply
     if not comment.is_blocked:
@@ -61,6 +70,9 @@ def update_comment(
         comment_service: CommentService = Depends(get_comment_service),
         current_user: User = Depends(get_current_active_user)
 ):
+    """
+    Update a comment.
+    """
     comment = comment_service.update_comment(db_obj=comment, obj_in=comment_in)
     return comment
 
@@ -74,6 +86,9 @@ def remove_comment(
         comment_service: CommentService = Depends(get_comment_service),
         current_user: User = Depends(get_current_active_user)
 ):
+    """
+    Delete a comment.
+    """
     return comment_service.remove_comment(post_id=post.id, comment_id=comment.id)
 
 
@@ -87,4 +102,7 @@ def comments_daily_breakdown(
         comment_service: CommentService = Depends(get_comment_service),
         current_user: User = Depends(get_current_active_user)
 ):
+    """
+    Get the daily breakdown of comments within a specified date range.
+    """
     return comment_service.get_comments_daily_breakdown(start_date, end_date, post_id)

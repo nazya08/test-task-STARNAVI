@@ -18,6 +18,9 @@ def enable_auto_reply(
         auto_reply_service: AutoReplyService = Depends(get_auto_reply_service),
         current_user: User = Depends(get_current_active_user)
 ):
+    """
+    Enable the auto-reply feature for the current user.
+    """
     auto_reply_service.enable_auto_reply(current_user.id, timedelta(minutes=delay))
     return {"message": "Auto-reply enabled"}
 
@@ -27,6 +30,9 @@ def disable_auto_reply(
         auto_reply_service: AutoReplyService = Depends(get_auto_reply_service),
         current_user: User = Depends(get_current_active_user)
 ):
+    """
+    Disable the auto-reply feature for the current user.
+    """
     auto_reply_service.disable_auto_reply(current_user.id)
     return {"message": "Auto-reply disabled"}
 
@@ -36,6 +42,9 @@ def get_auto_reply_settings(
         auto_reply_service: AutoReplyService = Depends(get_auto_reply_service),
         current_user: User = Depends(get_current_active_user)
 ):
+    """
+    Retrieve the auto-reply settings for the current user.
+    """
     settings = auto_reply_service.get_settings(current_user.id)
     if not settings:
         return {"is_enabled": False, "reply_delay": None}
@@ -49,6 +58,21 @@ def schedule_auto_reply(
         auto_reply_service: AutoReplyService = Depends(get_auto_reply_service),
         current_user: User = Depends(get_current_active_user)
 ):
+    """
+        Schedule an auto-reply to a comment on a post.
+
+        Args:
+            post (Post): The post to which the comment belongs.
+            comment (Comment): The comment that will receive the auto-reply.
+            auto_reply_service (AutoReplyService): The service to handle auto-reply logic.
+            current_user (User): The current authenticated user.
+
+        Returns:
+            dict: A success message indicating that the auto-reply has been scheduled.
+
+        Raises:
+            HTTPException: If an error occurs during the scheduling process.
+        """
     try:
         auto_reply_service.create_auto_reply(post=post, comment=comment, user=current_user)
         return {"message": "Auto-reply scheduled"}
