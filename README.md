@@ -1,4 +1,17 @@
-# STARNAVI Test Assignment
+# Social Media API with AI Moderation and Auto-Reply
+### Developed an API for managing postsand comments, integrating AI-based moderation and automated response features with a strong focus on user engagement and content quality.
+### Using FastAPI, Pydantic, SQLAlchemy, Celery, Redis, JWT, and the OpenAI API, I:
+• Created user authentication endpoints for registration and login.
+
+• Developed post and comment management endpoints, including
+moderation capabilities to detect and block inappropriate content at creation
+using OpenAI’s API for language processing.
+
+• Built analytics functionality for daily breakdowns of comments, showing the
+number of created and blocked comments by date.
+
+• Implemented an automated response feature for comments, allowing users
+to enable delayed, AI-generated replies tailored to each post and comment.
 
 ## Installation and Usage with Docker
 
